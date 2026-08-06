@@ -1,20 +1,20 @@
 const CACHE_NAME = "cep-explorer-v1";
 const STATIC_ASSETS = [
-    "/CEP-Explorer/",
-    "/CEP-Explorer/index.html",
-    "/CEP-Explorer/css/style.css",
-    "/CEP-Explorer/js/main.js",
-    "/CEP-Explorer/js/services/viaCepService.js",
-    "/CEP-Explorer/js/services/nominatimService.js",
-    "/CEP-Explorer/js/services/ibgeService.js",
-    "/CEP-Explorer/js/services/weatherService.js",
-    "/CEP-Explorer/js/services/mapsService.js",
-    "/CEP-Explorer/js/ui/theme.js",
-    "/CEP-Explorer/js/ui/toast.js",
-    "/CEP-Explorer/js/ui/history.js",
-    "/CEP-Explorer/js/ui/favorites.js",
-    "/CEP-Explorer/js/ui/app.js",
-    "/CEP-Explorer/manifest.json"
+    "./",
+    "./index.html",
+    "./css/style.css",
+    "./js/main.js",
+    "./js/services/viaCepService.js",
+    "./js/services/nominatimService.js",
+    "./js/services/ibgeService.js",
+    "./js/services/weatherService.js",
+    "./js/services/mapsService.js",
+    "./js/ui/theme.js",
+    "./js/ui/toast.js",
+    "./js/ui/history.js",
+    "./js/ui/favorites.js",
+    "./js/ui/app.js",
+    "./manifest.json"
 ];
 
 self.addEventListener("install", (event) => {
