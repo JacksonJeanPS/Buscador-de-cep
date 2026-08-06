@@ -2,38 +2,147 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Buscador de CEP - Consulte endereços completos por CEP de forma rápida e gratuita usando a API ViaCEP.">
-    <link rel="stylesheet" href="style.css">
-    <title>Buscador de CEP</title>
+    <meta name="description" content="CEP Explorer - Explore endereços brasileiros com mapa, clima, dados IBGE e Street View.">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <title>CEP Explorer</title>
 </head>
 <body>
-    <main>
-        <h1 id="logo">Buscador de CEP</h1>
-        <form>
-            <label for="cep">CEP:</label>
-            <input type="text"
-            id="cep"
-            name="cep"
-            placeholder="Digite seu CEP"
-            maxlength="9"
-            required
-            autocomplete="postal-code"
-            inputmode="numeric"
-            pattern="\d{5}-?\d{3}"
-            aria-describedby="cepHelp"
-            />
-            <small id="cepHelp">Digite apenas números. Formato: 00000-000</small>
-            <div class="button-group">
-                <button type="submit" name="submit" aria-label="Consultar CEP">Consultar</button>
-                <button type="button" id="clearBtn" name="clear" aria-label="Limpar busca">Limpar</button>
+    <div class="app">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">CEP Explorer</h1>
+                <div class="header-actions">
+                    <button id="btnTheme" class="icon-btn" aria-label="Alternar tema" title="Alternar tema claro/escuro">
+                        <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                </div>
             </div>
-        </form>
-        <section class="center">
-            <div id="result" role="status" aria-live="polite"></div>
-        </section>
-    </main>
-    <script src="main.js"></script>
+        </header>
+
+        <main class="main">
+            <section class="search-section">
+                <form id="searchForm" class="search-form">
+                    <div class="input-group">
+                        <label for="cepInput" class="sr-only">CEP</label>
+                        <input
+                            type="text"
+                            id="cepInput"
+                            name="cep"
+                            placeholder="Digite o CEP (apenas números)"
+                            maxlength="9"
+                            required
+                            autocomplete="postal-code"
+                            inputmode="numeric"
+                            pattern="\d{5}-?\d{3}"
+                            aria-describedby="cepHelp"
+                            class="cep-input"
+                        />
+                        <small id="cepHelp" class="input-help">Formato: 00000-000</small>
+                    </div>
+                    <div class="button-row">
+                        <button type="submit" id="btnSearch" class="btn btn-primary">Buscar</button>
+                        <button type="button" id="btnClear" class="btn btn-secondary">Limpar</button>
+                        <button type="button" id="btnGeolocation" class="btn btn-ghost" aria-label="Usar minha localização" title="Usar minha localização atual">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="loadingSection" class="state-section hidden">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Buscando dados do endereço...</p>
+                </div>
+            </section>
+
+            <section id="errorSection" class="state-section hidden" role="alert" aria-live="assertive">
+                <div class="error-state">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <p class="error-message">Erro ao buscar CEP.</p>
+                    <button class="btn btn-secondary" id="btnRetry">Tentar novamente</button>
+                </div>
+            </section>
+
+            <section id="emptySection" class="state-section">
+                <div class="empty-state">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <h2>Explore qualquer endereço</h2>
+                    <p>Digite um CEP para ver mapa, clima, dados do IBGE e muito mais.</p>
+                </div>
+            </section>
+
+            <section id="resultSection" class="results-section hidden" aria-live="polite">
+                <div class="results-grid">
+                    <article id="addressCard" class="card hidden">
+                        <div class="card-header"><h3>Endereço</h3></div>
+                        <div class="card-body"></div>
+                    </article>
+
+                    <article id="mapCard" class="card hidden">
+                        <div class="card-header"><h3>Mapa</h3><a href="#" target="_blank" rel="noopener" class="card-link">Abrir no Google Maps →</a></div>
+                        <div class="card-body map-container"></div>
+                    </article>
+
+                    <article id="streetViewCard" class="card hidden">
+                        <div class="card-header"><h3>Street View</h3></div>
+                        <div class="card-body"></div>
+                    </article>
+
+                    <article id="weatherCard" class="card hidden">
+                        <div class="card-header"><h3>Clima</h3></div>
+                        <div class="card-body"></div>
+                    </article>
+
+                    <article id="ibgeCard" class="card hidden">
+                        <div class="card-header"><h3>Dados IBGE</h3></div>
+                        <div class="card-body"></div>
+                    </article>
+
+                    <article id="actionsCard" class="card hidden">
+                        <div class="card-header"><h3>Ações</h3></div>
+                        <div class="card-body"></div>
+                    </article>
+
+                    <div id="qrCodeContainer" class="qr-section"></div>
+                </div>
+            </section>
+
+            <div class="sidebar-grid">
+                <section id="historySection" class="sidebar-card">
+                    <div class="sidebar-header">
+                        <h3>Histórico</h3>
+                        <button id="btnClearHistory" class="text-btn" title="Limpar histórico">Limpar</button>
+                    </div>
+                    <ul id="historyList" class="sidebar-list"></ul>
+                </section>
+
+                <section id="favoritesSection" class="sidebar-card">
+                    <div class="sidebar-header">
+                        <h3>Favoritos</h3>
+                    </div>
+                    <ul id="favoritesList" class="sidebar-list"></ul>
+                </section>
+            </div>
+        </main>
+
+        <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+    </div>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js");
+            });
+        }
+    </script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
