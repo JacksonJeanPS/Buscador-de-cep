@@ -20,14 +20,18 @@
             maxlength="9"
             required
             autocomplete="postal-code"
+            inputmode="numeric"
+            pattern="\d{5}-?\d{3}"
+            aria-describedby="cepHelp"
             />
+            <small id="cepHelp">Digite apenas números. Formato: 00000-000</small>
             <div class="button-group">
                 <button type="submit" name="submit" aria-label="Consultar CEP">Consultar</button>
                 <button type="button" id="clearBtn" name="clear" aria-label="Limpar busca">Limpar</button>
             </div>
         </form>
         <section class="center">
-            <ul id="result" role="status" aria-live="polite"></ul>
+            <div id="result" role="status" aria-live="polite"></div>
         </section>
     </main>
     <script src="main.js"></script>

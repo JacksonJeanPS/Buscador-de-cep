@@ -2,14 +2,27 @@ function criarElementoResultadoSucesso(value) {
     const result = document.querySelector("#result");
     result.innerHTML = "";
     if (!!value.cep) {
+        const labels = {
+            cep: "CEP",
+            logradouro: "Logradouro",
+            complemento: "Complemento",
+            bairro: "Bairro",
+            localidade: "Cidade",
+            uf: "Estado",
+            ibge: "IBGE",
+            gia: "GIA",
+            ddd: "DDD",
+            siafi: "SIAFI"
+        };
+        let html = "<dl>";
         for (const property in value) {
-            result.insertAdjacentHTML (
-                "beforeend",
-                `<li><strong>${property}:</strong> ${value[property]}</li>`
-            );
+            const label = labels[property] || property;
+            html += `<dt>${label}</dt><dd>${value[property]}</dd>`;
         }
+        html += "</dl>";
+        result.insertAdjacentHTML("beforeend", html);
     }else {
-        criarElementoResultadoErro("Cep não encontrado!!!");
+        criarElementoResultadoErro("CEP não encontrado!!!");
     }
 }
 
@@ -18,25 +31,37 @@ function criarElementoResultadoErro(value) {
     result.innerHTML = "";
     result.insertAdjacentHTML(
         "beforeend",
-        `<h2 class="error">${value}</h2>`
+        `<div class="error" role="alert">${value}</div>`
     );
 }
 
 function pesquisarCEP(cep) {
     const result = document.querySelector("#result");
     const btn = document.querySelector("button[type='submit']");
-    result.innerHTML = '<li class="loading">Buscando...</li>';
+    result.innerHTML = '<div class="loading"><span class="spinner" aria-hidden="true"></span><span class="sr-only">Buscando...</span></div>';
     btn.disabled = true;
     const url = `https://viacep.com.br/ws/${cep}/json/`;
-    fetch(url)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    fetch(url, { signal: controller.signal })
         .then((response) => response.json())
-        .then((result) => {
+        .then((data) => {
+            clearTimeout(timeoutId);
             btn.disabled = false;
-            criarElementoResultadoSucesso(result);
+            if (data.erro) {
+                criarElementoResultadoErro("CEP não encontrado!!!");
+            } else {
+                criarElementoResultadoSucesso(data);
+            }
         })
         .catch((err) => {
+            clearTimeout(timeoutId);
             btn.disabled = false;
-            criarElementoResultadoErro("CEP inválido ou erro na busca!!!");
+            if (err.name === 'AbortError') {
+                criarElementoResultadoErro("Tempo de requisição esgotado. Tente novamente.");
+            } else {
+                criarElementoResultadoErro("Erro na conexão. Verifique sua internet.");
+            }
         });
 }
 
@@ -46,7 +71,11 @@ const inputCEP = document.querySelector("#cep");
 inputCEP.addEventListener("input", function (e) {
     let value = e.target.value.replace(/\D/g, "");
     if (value.length > 8) value = value.slice(0, 8);
-    e.target.value = value.replace(/(\d{5})(\d)/, "$1-$$2");
+    if (value.length > 5) {
+        e.target.value = value.slice(0, 5) + "-" + value.slice(5);
+    } else {
+        e.target.value = value;
+    }
 });
 
 form.addEventListener("submit", function (e) {

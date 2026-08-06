@@ -30,7 +30,7 @@ main {
     font-size: 60px;
     font-weight: bold;
     text-align: center;
-    color: lightgray;
+    color: #ccc;
     -webkit-transition: 0.2s ease all;
     -moz-transition: 0.2s ease all;
     -ms-transition: 0.2s ease all;
@@ -56,12 +56,21 @@ form label {
     color: #555;
     margin-bottom: 8px;
     cursor: pointer;
+    font-weight: bold;
+}
+
+form small {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-top: -10px;
+    margin-bottom: 15px;
 }
 
 form input {
     width: 100%;
     padding: 15px 10px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     outline: none;
     border: 1px solid #bbb;
     border-radius: 20px;
@@ -75,8 +84,9 @@ form input {
     transition: 0.25s ease all;
 }
 
-form input[type=text]:focus {
+form input:focus {
     border-color: orange;
+    box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.2);
 }
 
 button {
@@ -104,6 +114,11 @@ button:active {
     opacity: 0.4;
 }
 
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.3);
+}
+
 button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -111,7 +126,6 @@ button:disabled {
 
 #clearBtn {
     background: #ccc;
-    margin-left: 10px;
 }
 
 #clearBtn:hover {
@@ -122,24 +136,17 @@ form .button-group {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
-    margin-top: 10px;
-}
-
-#clearBtn {
-    background: #ccc;
-}
-
-#clearBtn:hover {
-    opacity: 0.8;
+    flex-wrap: wrap;
+    margin-top: 15px;
 }
 
 .center {
     display: flex;
     justify-content: center;
+    margin-top: 20px;
 }
 
 #result {
-    list-style: none;
     width: 100%;
     background: white;
     padding: 20px;
@@ -147,30 +154,77 @@ form .button-group {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-#result li {
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
-    color: #333;
+#result dl {
+    margin: 0;
 }
 
-#result li:last-child {
+#result dt {
+    font-weight: bold;
+    color: #555;
+    text-transform: capitalize;
+    padding: 8px 0 4px;
+    border-top: 1px solid #eee;
+}
+
+#result dt:first-child {
+    border-top: none;
+}
+
+#result dd {
+    margin: 0 0 8px 0;
+    padding: 0 0 8px 0;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+#result dd:last-child {
     border-bottom: none;
 }
 
-#result li strong {
-    color: #555;
-    text-transform: capitalize;
-}
-
 #result .error {
-    color: #f00;
+    color: #d32f2f;
     text-align: center;
+    padding: 20px;
+    font-weight: bold;
+    background: #ffebee;
+    border-radius: 8px;
+    border: 1px solid #ffcdd2;
 }
 
 #result .loading {
-    text-align: center;
-    color: #888;
-    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    color: #666;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #ddd;
+    border-top-color: orange;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 @media (max-width: 480px) {
@@ -183,8 +237,8 @@ form .button-group {
     }
 
     button {
-        width: 100%;
-        margin-bottom: 10px;
+        flex: 1;
+        min-width: 0;
     }
 
     #clearBtn {
