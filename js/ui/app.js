@@ -24,6 +24,7 @@ function getElements() {
     return {
         form: document.getElementById("searchForm"),
         input: document.getElementById("cepInput"),
+        cepHelp: document.getElementById("cepHelp"),
         btnSearch: document.getElementById("btnSearch"),
         btnClear: document.getElementById("btnClear"),
         btnGeolocation: document.getElementById("btnGeolocation"),
@@ -54,6 +55,10 @@ export function init() {
     els.form.addEventListener("submit", (e) => {
         e.preventDefault();
         handleSearch(els.input.value);
+    });
+
+    els.input.addEventListener("input", () => {
+        els.cepHelp.classList.remove("error");
     });
 
     els.btnClear.addEventListener("click", () => {
@@ -91,9 +96,12 @@ async function handleSearch(cepValue) {
     const cep = cepValue.replace(/\D/g, "");
 
     if (!/^\d{8}$/.test(cep)) {
+        els.cepHelp.classList.add("error");
         showError(els, "CEP inválido. Digite 8 números.");
         return;
     }
+
+    els.cepHelp.classList.remove("error");
 
     showLoading(els);
     hideError(els);
@@ -416,6 +424,7 @@ function clearResults(els) {
     els.resultSection.classList.add("hidden");
     els.errorSection.classList.add("hidden");
     els.emptySection.classList.remove("hidden");
+    els.cepHelp.classList.remove("error");
     currentData = null;
     currentCoords = null;
     currentWeather = null;
