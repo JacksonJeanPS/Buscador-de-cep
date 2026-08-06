@@ -11,8 +11,8 @@ export async function buscarDadosMunicipio(uf, municipio) {
     const data = await response.json();
     const municipioEncontrado = data.find(
         (item) =>
-            item.UF.sigla.toLowerCase() === uf.toLowerCase() &&
-            item.nome.toLowerCase() === municipio.toLowerCase()
+            item["UF-sigla"].toLowerCase() === uf.toLowerCase() &&
+            item["municipio-nome"].toLowerCase() === municipio.toLowerCase()
     );
 
     if (!municipioEncontrado) {
@@ -20,10 +20,10 @@ export async function buscarDadosMunicipio(uf, municipio) {
     }
 
     return {
-        codigoIbge: municipioEncontrado.id,
-        nome: municipioEncontrado.nome,
-        uf: municipioEncontrado.UF.sigla,
-        regiao: municipioEncontrado.UF.regiao.nome,
+        codigoIbge: municipioEncontrado["municipio-id"],
+        nome: municipioEncontrado["municipio-nome"],
+        uf: municipioEncontrado["UF-sigla"],
+        regiao: municipioEncontrado["regiao-nome"],
         populacaoEstimada: null
     };
 }

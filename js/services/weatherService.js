@@ -1,9 +1,11 @@
-const OPEN_METEO_BASE = "https://api.open-meteo.com/api/v1";
+const OPEN_METEO_BASE = "https://api.open-meteo.com/v1";
 
 export async function buscarClima(lat, lon) {
     const url = `${OPEN_METEO_BASE}/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+        headers: { "User-Agent": "CEP-Explorer/1.0" }
+    });
     if (!response.ok) {
         throw new Error("Erro ao consultar o clima.");
     }
